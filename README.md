@@ -9,8 +9,7 @@ Tout d'abord, on va commencer par l'installation de GlusterFS car c'est le logic
 ### Environnement:
 - 3 machines Debian 13 (à jour)
 - Chaque machine à une IP fixe
-- Prévoir une 4e adresse IP fixe pour la VIP
-- Serveur DNS pour gérer la connexion via nom d'hôte (ou configuration `/etc/hosts`)
+- Prévoir une 4e adresse IP fixe pour la Virtual IP (VIP)
 - Chaque machine possède 2 disques (1 pour le système et l'autre pour GlusterFS)
 
 ### Nom des machines :
@@ -31,6 +30,37 @@ Tout d'abord, on va commencer par l'installation de GlusterFS car c'est le logic
 Sur les 3 noeuds, faites :
 ```bash
 apt update && apt install glusterfs-server -y
+```
+
+On va maintenant passé au paramétrage des noms DNS. Il est recommandé de passé par les noms DNS pour GlusterFS.
+
+Pour les tests, on utilisera les IPs suivantes, remplacez par les votres évidemment :
+- swarm01 : 192.168.1.1
+- swarm02 : 192.168.1.2
+- swarm03 : 192.168.1.3
+
+swarm01 :
+```bash
+cat >> /etc/hosts << EOF
+192.168.1.2 swarm02
+192.168.1.3 swarm03
+EOF
+```
+
+swarm02 :
+```bash
+cat >> /etc/hosts << EOF
+192.168.1.1 swarm01
+192.168.1.3 swarm03
+EOF
+```
+
+swarm03 :
+```bash
+cat >> /etc/hosts << EOF
+192.168.1.1 swarm01
+192.168.1.2 swarm02
+EOF
 ```
 
 On va ensuite passer au paramétrage de `sdb`. Dans mon cas particuler, je travaille avec `ext4`. Adaptez la commande si besoin :
