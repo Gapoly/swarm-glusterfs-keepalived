@@ -4,6 +4,10 @@
 
 Tout d'abord, on va commencer par l'installation de GlusterFS car c'est le logiciel le plus complexe à mettre en place. Les pré-requis sont adaptés à la maniere dont, j'ai fait l'installation.
 
+## Introduction
+
+Qu'est-ce que GlusterFS, Docker Swarm & keepalived?
+
 ## ✔️0. Pré-requis
 
 ### Environnement:
@@ -107,11 +111,6 @@ Depuis le swarm01, on va peer les autres serveurs GlusterFS. Sur swarm01 faites 
 ```bash
 gluster peer probe swarm02
 gluster peer probe swarm03
-```
-
-Depuis le noeud swarm02 & swarm03, faites :
-```bash
-gluster peer probe swarm01
 ```
 
 Pour vérifier que tout est bon, sur les serveurs faites :
