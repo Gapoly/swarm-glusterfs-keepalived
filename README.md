@@ -186,8 +186,7 @@ sleep 2
 while true
 do
     mount -t glusterfs swarm01:/gv0 /mnt/docker -o backup-volfile-servers=swarm02:swarm03
-    mount_return=$?
-    case $mount_return in
+    case $? in
         0) break;;
         *) sleep 5;;
     esac
@@ -209,8 +208,7 @@ sleep 2
 while true
 do
     mount -t glusterfs swarm02:/gv0 /mnt/docker -o backup-volfile-servers=swarm01:swarm03
-    mount_return=$?
-    case $mount_return in
+    case $? in
         0) break;;
         *) sleep 5;;
     esac
@@ -232,8 +230,7 @@ sleep 2
 while true
 do
     mount -t glusterfs swarm03:/gv0 /mnt/docker -o backup-volfile-servers=swarm01:swarm02
-    mount_return=$?
-    case $mount_return in
+    case $? in
         0) break;;
         *) sleep 5;;
     esac
