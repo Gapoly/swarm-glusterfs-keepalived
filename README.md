@@ -167,9 +167,9 @@ Si sa marche, on peut passer à la prochaine étape qui est le montage automatiq
 
 ## 1.3. Montage automatique de la réplication
 
-Normalement, il faudrait utiliser /etc/fstab pour monter automatiquement les volumes GlusterFS, or j'ai remarqué que GlusterFS devient opérationnel après le montage /etc/fstab.
+Normalement, il faudrait utiliser /etc/fstab pour monter automatiquement les volumes GlusterFS, or j'ai remarqué que GlusterFS devient opérationnel après le montage `/etc/fstab`.
 
-Ce qui est problématique, car cela voudrait dire que je n'ai plus de réplication jusqu'a qu'un utilisateur se connecte mannuellement et fassé un `mount -a`
+Ce qui est problématique, car cela voudrait dire que je n'ai plus de réplication jusqu'a qu'un utilisateur se connecte mannuellement et fasse un `mount -a`.
 
 Pour éviter cela, j'ai décidé créer un script qui va refaire un mount toutes les 5 secondes jusqu'a qu'il marche.
 
