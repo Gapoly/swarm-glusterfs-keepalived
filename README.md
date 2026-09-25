@@ -13,7 +13,7 @@ Tout d'abord, on va commencer par l'installation de GlusterFS car c'est le logic
 - Serveur DNS pour gérer la connexion via nom d'hôte (ou configuration `/etc/hosts`)
 - Chaque machine possède 2 disques (1 pour le système et l'autre pour GlusterFS)
 
-### Nomd des machines :
+### Nom des machines :
 - `swarm01`
 - `swarm02`
 - `swarm03`
