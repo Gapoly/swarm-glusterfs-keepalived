@@ -136,8 +136,6 @@ Options Reconfigured:
 transport.address-family: inet
 ```
 
-Vous pouvez mainte
-
 ## 1.2. Montage GlusterFS
 
 Maintenant que le databrick est pret, on peut maintenant commencer à mettre en place le premier montage de réplication. Toutes les données qui se trouve dans ce montage, seront répliqués entre les noeuds.
