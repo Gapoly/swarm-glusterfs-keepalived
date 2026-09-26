@@ -8,6 +8,8 @@
 
 [Docker Swarm](https://docs.docker.com/engine/swarm/) est l'outil d'orchestration de conteneurs intégré à Docker. Il vous permet de regrouper plusieurs hôtes Docker et de les gérer comme un seul et même cluster Docker Swarm, en utilisant Docker CLI ou d'autres outils permettant la gestion d'un cluster Docker Swarm.
 
+---
+
 ### 🐜GlusterFS <p align="left"><img src="images/gluster.png" alt="Docker Swarm + GlusterFS" width="20%"></p>
 
 [GlusterFS](https://github.com/gluster/glusterfs) est un système de stockage distribué défini par logiciel capable d'évoluer jusqu'à plusieurs pétaoctets. Il propose des interfaces pour le stockage d'objets, de blocs et de fichiers.
@@ -15,6 +17,8 @@
 GlusterFS est un logiciel libre et open source qui peut fonctionner sur du matériel standard disponible dans le commerce.
 
 Vous pouvez trouvez la documentation officielle [ici](https://docs.gluster.org/en/latest/).
+
+---
 
 ### 🌐Keepalived <p align="left"><img src="images/keepalived.png" alt="Docker Swarm + GlusterFS" width="20%"></p>
 
@@ -83,6 +87,8 @@ cat >> /etc/hosts << EOF
 EOF
 ```
 
+---
+
 On va ensuite passer au paramétrage de `sdb`. Dans mon cas particuler, je travaille avec `ext4`. Adaptez la commande si besoin :
 
 *(Je n'ai pas fait de partitionnage, j'installe tout directement sur sdb)*
@@ -115,6 +121,7 @@ Pour cela faites cette commande sur les 3 serveurs :
 sed -i 's|^/dev/sdb /data/brick1 ext4 defaults,acl,user_xattr 0 2$|/dev/sdb /data/brick1 ext4 defaults,acl,user_xattr,nofail 0 2|' /etc/fstab
 ```
 
+---
 
 On active GlusterFS et on vérifie que tout est vert :
 ```bash
@@ -240,6 +247,8 @@ EOF
 echo "@reboot root /usr/local/sbin/docker_mount.sh" > /etc/cron.d/docker_mount
 ```
 
+---
+
 `swarm02` :
 ```bash
 touch /usr/local/sbin/docker_mount.sh
@@ -261,6 +270,8 @@ done
 EOF
 echo "@reboot root /usr/local/sbin/docker_mount.sh" > /etc/cron.d/docker_mount
 ```
+
+---
 
 `swarm03` :
 ```bash
@@ -286,10 +297,10 @@ echo "@reboot root /usr/local/sbin/docker_mount.sh" > /etc/cron.d/docker_mount
 
 Maintenant, a chaque fois que les serveurs vont redémarrer. Le montage `/mnt/docker` va toujours se remonter, peu importe le délai.
 
-Pour être sûr que tout marche je propose de faire ces tests :
+Pour être sûr que tout marche je vous propose de faire ces tests :
 - Créer un fichier dans le `/mnt/docker` pour voir si la réplication marche entre les serveurs, par exemple `test.txt`
-- Rédémarrer un par un les serveurs pour voir si le montage remonte automatiquement et vérifier si `test.txt` apparait bien a chaque fois. Il faut parfois attendre quelques secondes pour le montage de `/mnt/docker`.
-- Redémarrer les 3 serveurs en même temps et vérifier que chaque serveur a bien remonté le volume avec la réplication.
+- Rédémarrer un par un les serveurs pour voir si le montage remonte automatiquement et vérifiez si `test.txt` apparait bien à chaque fois. Il faut parfois attendre quelques secondes pour le montage de `/mnt/docker`.
+- Redémarrer les 3 serveurs en même temps et vérifiez que chaque serveur a bien remonté le volume avec la réplication.
 
 Si les tests marche alors on a terminée la partie GlusterFS, on va pouvoir basculer sur **Docker Swarm**.
 
