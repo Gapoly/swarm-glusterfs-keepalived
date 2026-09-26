@@ -2,6 +2,10 @@
 
 # Procédures d'installation 🐳Docker Swarm avec réplication 🐜GlusterFS et 🌐Virtual IP via `keepalived`
 
+Après avoir cherché un tuto d'installation GlusterFS, je me suis rendu compte qu'il y en avait peu, déprécié et pas forcément visé pour un nouveau débutant/moyen, c'est pour celà que j'ai eu l'idée de créer le mien et de le coupler avec un orchestrateur de containeur.
+
+Ce dépôt est pour les débutants qui cherche à mettre un premier pieds dans la réplication de données et l'orchestration de données.
+
 ## 📚️Introduction
 
 ### 🐳Docker Swarm <p align="left"><img src="images/docker.png" alt="Docker Swarm + GlusterFS" width="20%"></p>
@@ -332,7 +336,7 @@ curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/doc
 chmod a+r /etc/apt/keyrings/docker.asc
 
 # Add the repository to Apt sources:
-tee /etc/apt/sources.list.d/docker.sources << 'EOF'
+tee /etc/apt/sources.list.d/docker.sources << EOF
 Types: deb
 URIs: https://download.docker.com/linux/debian
 Suites: $(. /etc/os-release && echo "$VERSION_CODENAME")
@@ -351,3 +355,42 @@ docker run hello-world
 
 Si sa marche, on va passez à la configuration du dossier `volumes` de Docker Swarm.
 
+Hélas, on ne pourra pas répliquer directement le dossier `/var/lib/docker/volumes/` car chaque Docker à ses propres fichiers dedans qui ne peuvent pas être partagés (`backingFsBlockDev` & `metadata.db`)
+
+
+On va juste créer un dossier volumes dans `/mnt/docker/` et pointer manuellement dedans avec chaque déploiement Swarm.
+
+Depuis 1 serveur, il faut créer le dossier `volumes` :
+```bash
+mkdir -p /mnt/docker/volumes/
+chmod -R 701 /mnt/docker/volumes
+```
+
+---
+
+On va maintenant passer à l'initiation du cluster Docker Swarm.
+
+Sur 1 serveur; initier le cluster :
+```bash
+docker swarm init
+```
+
+Il devrait générer un output avec une commande similaire à celle-ci :
+
+> `docker swarm join --token SWMTKN-1-SUPERSECRETTOKEN 192.168.1.1:2377`
+
+---
+
+Prenez cette commande et éxécutez là sur les 2 autres serveurs :
+```bash
+docker swarm join --token SWMTKN-1-SUPERSECRETTOKEN 192.168.1.1:2377
+```
+
+```bash
+```
+
+```bash
+```
+
+```bash
+```
