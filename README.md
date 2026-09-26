@@ -70,7 +70,7 @@ Pour les tests, on utilisera les IPs suivantes, remplacez par les votres évidem
 
 `swarm01` :
 ```bash
-cat >> /etc/hosts << EOF
+cat >> /etc/hosts << 'EOF'
 192.168.1.2 swarm02
 192.168.1.3 swarm03
 EOF
@@ -78,7 +78,7 @@ EOF
 
 `swarm02` :
 ```bash
-cat >> /etc/hosts << EOF
+cat >> /etc/hosts << 'EOF'
 192.168.1.1 swarm01
 192.168.1.3 swarm03
 EOF
@@ -86,7 +86,7 @@ EOF
 
 `swarm03` :
 ```bash
-cat >> /etc/hosts << EOF
+cat >> /etc/hosts << 'EOF'
 192.168.1.1 swarm01
 192.168.1.2 swarm02
 EOF
@@ -100,7 +100,7 @@ On va ensuite passer au paramétrage de `sdb`. Dans mon cas particuler, je trava
 ```bash
 mkfs.ext4 -I 512 /dev/sdb
 mkdir -p /data/brick1
-cat >> /etc/fstab << EOF
+cat >> /etc/fstab << 'EOF'
 # Databrick GlusterFS
 /dev/sdb /data/brick1 ext4 defaults,acl,user_xattr 0 2
 EOF
@@ -242,7 +242,7 @@ Pour éviter cela, j'ai décidé créer un script qui va refaire un mount toutes
 ```bash
 touch /usr/local/sbin/docker_mount.sh
 chmod 744 /usr/local/sbin/docker_mount.sh
-cat > /usr/local/sbin/docker_mount.sh << EOF
+cat > /usr/local/sbin/docker_mount.sh << 'EOF'
 #!/bin/bash
 # Script lancement mount GlusterFS
 
@@ -251,8 +251,7 @@ sleep 2
 while true
 do
     mount -t glusterfs swarm01:/gv0 /mnt/docker -o backup-volfile-servers=swarm02:swarm03
-    mount_return=$?
-    case $mount_return in
+    case $? in
         0) break;;
         *) sleep 5;;
     esac
@@ -267,7 +266,7 @@ echo "@reboot root /usr/local/sbin/docker_mount.sh" > /etc/cron.d/docker_mount
 ```bash
 touch /usr/local/sbin/docker_mount.sh
 chmod 744 /usr/local/sbin/docker_mount.sh
-cat > /usr/local/sbin/docker_mount.sh << EOF
+cat > /usr/local/sbin/docker_mount.sh << 'EOF'
 #!/bin/bash
 # Script lancement mount GlusterFS
 
@@ -276,8 +275,7 @@ sleep 2
 while true
 do
     mount -t glusterfs swarm02:/gv0 /mnt/docker -o backup-volfile-servers=swarm01:swarm03
-    mount_return=$?
-    case $mount_return in
+    case $? in
         0) break;;
         *) sleep 5;;
     esac
@@ -292,7 +290,7 @@ echo "@reboot root /usr/local/sbin/docker_mount.sh" > /etc/cron.d/docker_mount
 ```bash
 touch /usr/local/sbin/docker_mount.sh
 chmod 744 /usr/local/sbin/docker_mount.sh
-cat > /usr/local/sbin/docker_mount.sh << EOF
+cat > /usr/local/sbin/docker_mount.sh << 'EOF'
 #!/bin/bash
 # Script lancement mount GlusterFS
 
@@ -301,8 +299,7 @@ sleep 2
 while true
 do
     mount -t glusterfs swarm03:/gv0 /mnt/docker -o backup-volfile-servers=swarm01:swarm02
-    mount_return=$?
-    case $mount_return in
+    case $? in
         0) break;;
         *) sleep 5;;
     esac
@@ -335,7 +332,7 @@ curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/doc
 chmod a+r /etc/apt/keyrings/docker.asc
 
 # Add the repository to Apt sources:
-tee /etc/apt/sources.list.d/docker.sources <<EOF
+tee /etc/apt/sources.list.d/docker.sources << 'EOF'
 Types: deb
 URIs: https://download.docker.com/linux/debian
 Suites: $(. /etc/os-release && echo "$VERSION_CODENAME")
