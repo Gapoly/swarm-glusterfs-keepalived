@@ -30,7 +30,7 @@ Il offre des fonctionnalités simples et robustes d'équilibrage de charge et de
 
 Tout d'abord, on va commencer par l'installation de GlusterFS car c'est le logiciel le plus complexe à mettre en place. Les pré-requis sont adaptés à la maniere dont, j'ai fait l'installation.
 
-### Environnement:
+### Environnement :
 - 3 machines Debian 13 (à jour)
 - Chaque machine à une IP fixe
 - Prévoir une 4e adresse IP fixe pour la Virtual IP (VIP)
@@ -41,7 +41,7 @@ Tout d'abord, on va commencer par l'installation de GlusterFS car c'est le logic
 - `swarm02`
 - `swarm03`
 
-### Machine:
+### Machine :
 - 4 vCPU
 - 4 Go RAM
 - 1 disque 16 Go (minimum)
@@ -49,7 +49,7 @@ Tout d'abord, on va commencer par l'installation de GlusterFS car c'est le logic
 
 ## 🐜1. Installation GlusterFS
 
-*A partir de ce moment, je recommande de taper toutes les commandes avec  `root` pour gagner du temps.*
+*A partir de ce moment, je recommande de taper toutes les commandes avec `root` pour gagner du temps et des erreurs.*
 
 Sur les 3 noeuds, faites :
 ```bash
@@ -58,7 +58,12 @@ apt update && apt install glusterfs-server -y
 
 On va maintenant passé au paramétrage des noms DNS. Il est recommandé de passé par les noms DNS pour GlusterFS.
 
+---
+
 Pour les tests, on utilisera les IPs suivantes, remplacez par les votres évidemment :
+
+*(Si vous avez un serveur DNS local, je vous recommande de passer par celui-ci)*
+
 - `swarm01` : `192.168.1.1`
 - `swarm02` : `192.168.1.2`
 - `swarm03` : `192.168.1.3`
@@ -192,26 +197,34 @@ transport.address-family: inet
 
 Maintenant que le databrick est pret, on peut maintenant commencer à mettre en place le premier montage de réplication. Toutes les données qui se trouve dans ce montage, seront répliqués entre les noeuds.
 
-Sur les 3 serveurs, créer un point de montage :
+Sur les 3 serveurs, créez un point de montage :
 
 ```bash
 mkdir -p /mnt/docker
 ```
+
+---
 
 `swarm01` :
 ```bash
 mount -t glusterfs swarm01:/gv0 /mnt/docker -o backup-volfile-servers=swarm02:swarm03
 ```
 
+---
+
 `swarm02` :
 ```bash
 mount -t glusterfs swarm02:/gv0 /mnt/docker -o backup-volfile-servers=swarm01:swarm03
 ```
 
+---
+
 `swarm03` :
 ```bash
 mount -t glusterfs swarm03:/gv0 /mnt/docker -o backup-volfile-servers=swarm01:swarm02
 ```
+
+---
 
 Maintenant faites un test en créant 1 fichier dans `/mnt/docker/` depuis n'importe quel serveur et vérifier si il c'est répliquer sur les autres.
 
@@ -238,7 +251,8 @@ sleep 2
 while true
 do
     mount -t glusterfs swarm01:/gv0 /mnt/docker -o backup-volfile-servers=swarm02:swarm03
-    case $? in
+    mount_return=$?
+    case $mount_return in
         0) break;;
         *) sleep 5;;
     esac
@@ -262,7 +276,8 @@ sleep 2
 while true
 do
     mount -t glusterfs swarm02:/gv0 /mnt/docker -o backup-volfile-servers=swarm01:swarm03
-    case $? in
+    mount_return=$?
+    case $mount_return in
         0) break;;
         *) sleep 5;;
     esac
@@ -286,7 +301,8 @@ sleep 2
 while true
 do
     mount -t glusterfs swarm03:/gv0 /mnt/docker -o backup-volfile-servers=swarm01:swarm02
-    case $? in
+    mount_return=$?
+    case $mount_return in
         0) break;;
         *) sleep 5;;
     esac
@@ -335,3 +351,6 @@ Pour tester, vous pouvez faire cette commande sur les 3 hôtes :
 ```bash
 docker run hello-world
 ```
+
+Si sa marche, on va passez à la configuration du dossier `volumes` de Docker Swarm.
+
