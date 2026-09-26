@@ -386,7 +386,9 @@ Prenez cette commande et éxécutez là sur les 2 autres serveurs :
 docker swarm join --token SWMTKN-1-SUPERSECRETTOKEN 192.168.1.1:2377
 ```
 
+On peut vérifier les noeuds du cluster swarm avec cette commande
 ```bash
+docker node ls
 ```
 
 ```bash
