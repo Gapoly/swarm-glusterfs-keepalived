@@ -1,14 +1,30 @@
-# Procédures d'installation 🐳Docker Swarm avec réplication 🐜GlusterFS et 🌐VIP via `keepalived`
+<p align="center"><img src="images/swarm-glusterfs-keepalived.png" alt="Docker Swarm + GlusterFS" width="100%"></p>
 
-<p align="center"><img src="DockerSwarmGlusterFSnoBG.png" alt="Docker Swarm + GlusterFS" width="50%"></p>
+# Procédures d'installation 🐳Docker Swarm avec réplication 🐜GlusterFS et 🌐Virtual IP via `keepalived`
 
-Tout d'abord, on va commencer par l'installation de GlusterFS car c'est le logiciel le plus complexe à mettre en place. Les pré-requis sont adaptés à la maniere dont, j'ai fait l'installation.
+## 📚️Introduction
 
-## Introduction
+### 🐳Docker Swarm <p align="left"><img src="images/docker.png" alt="Docker Swarm + GlusterFS" width="20%"></p>
 
-Qu'est-ce que GlusterFS, Docker Swarm & keepalived?
+[Docker Swarm](https://docs.docker.com/engine/swarm/) est l'outil d'orchestration de conteneurs intégré à Docker. Il vous permet de regrouper plusieurs hôtes Docker et de les gérer comme un seul et même cluster Docker Swarm, en utilisant Docker CLI ou d'autres outils permettant la gestion d'un cluster Docker Swarm.
+
+### 🐜GlusterFS <p align="left"><img src="images/gluster.png" alt="Docker Swarm + GlusterFS" width="20%"></p>
+
+[GlusterFS](https://github.com/gluster/glusterfs) est un système de stockage distribué défini par logiciel capable d'évoluer jusqu'à plusieurs pétaoctets. Il propose des interfaces pour le stockage d'objets, de blocs et de fichiers.
+
+GlusterFS est un logiciel libre et open source qui peut fonctionner sur du matériel standard disponible dans le commerce.
+
+Vous pouvez trouvez la documentation officielle [ici](https://docs.gluster.org/en/latest/).
+
+### 🌐Keepalived <p align="left"><img src="images/keepalived.png" alt="Docker Swarm + GlusterFS" width="20%"></p>
+
+[Keepalived](https://github.com/acassen/keepalived) est un logiciel de routage écrit en C.
+ 
+Il offre des fonctionnalités simples et robustes d'équilibrage de charge et de haute disponibilité aux systèmes Linux et aux infrastructures basées sur Linux, et il est utilisé en production dans des centres de données, chez des FAI et chez des fournisseurs de matériel informatique du monde entier.
 
 ## ✔️0. Pré-requis
+
+Tout d'abord, on va commencer par l'installation de GlusterFS car c'est le logiciel le plus complexe à mettre en place. Les pré-requis sont adaptés à la maniere dont, j'ai fait l'installation.
 
 ### Environnement:
 - 3 machines Debian 13 (à jour)
@@ -39,11 +55,11 @@ apt update && apt install glusterfs-server -y
 On va maintenant passé au paramétrage des noms DNS. Il est recommandé de passé par les noms DNS pour GlusterFS.
 
 Pour les tests, on utilisera les IPs suivantes, remplacez par les votres évidemment :
-- swarm01 : 192.168.1.1
-- swarm02 : 192.168.1.2
-- swarm03 : 192.168.1.3
+- `swarm01` : `192.168.1.1`
+- `swarm02` : `192.168.1.2`
+- `swarm03` : `192.168.1.3`
 
-swarm01 :
+`swarm01` :
 ```bash
 cat >> /etc/hosts << EOF
 192.168.1.2 swarm02
@@ -51,7 +67,7 @@ cat >> /etc/hosts << EOF
 EOF
 ```
 
-swarm02 :
+`swarm02` :
 ```bash
 cat >> /etc/hosts << EOF
 192.168.1.1 swarm01
@@ -59,7 +75,7 @@ cat >> /etc/hosts << EOF
 EOF
 ```
 
-swarm03 :
+`swarm03` :
 ```bash
 cat >> /etc/hosts << EOF
 192.168.1.1 swarm01
@@ -139,7 +155,7 @@ Sur 1 seul serveur, on va activer la databrick gv0 :
 gluster volume start gv0
 ```
 
-En cas de succès :
+Si la commande à marché, vous verrez :
 > `volume start: gv0: success`
 
 On vérifie que tout gv0 est bien activé sur tout les serveurs :
@@ -202,7 +218,7 @@ Ce qui est problématique, car cela voudrait dire que je n'ai plus de réplicati
 
 Pour éviter cela, j'ai décidé créer un script qui va refaire un mount toutes les 5 secondes jusqu'a qu'il marche.
 
-swarm01 :
+`swarm01` :
 ```bash
 touch /usr/local/sbin/docker_mount.sh
 chmod 744 /usr/local/sbin/docker_mount.sh
@@ -224,7 +240,7 @@ EOF
 echo "@reboot root /usr/local/sbin/docker_mount.sh" > /etc/cron.d/docker_mount
 ```
 
-swarm02 :
+`swarm02` :
 ```bash
 touch /usr/local/sbin/docker_mount.sh
 chmod 744 /usr/local/sbin/docker_mount.sh
@@ -246,7 +262,7 @@ EOF
 echo "@reboot root /usr/local/sbin/docker_mount.sh" > /etc/cron.d/docker_mount
 ```
 
-swarm03 :
+`swarm03` :
 ```bash
 touch /usr/local/sbin/docker_mount.sh
 chmod 744 /usr/local/sbin/docker_mount.sh
@@ -281,8 +297,6 @@ Si les tests marche alors on a terminée la partie GlusterFS, on va pouvoir basc
 
 Pour l'installation de Docker Swarm, on va passer par la documentation officielle (https://docs.docker.com/engine/install/debian/) :
 
-
-
 Sur les 3 serveurs :
 
 ```bash
@@ -306,9 +320,7 @@ EOF
 apt update && apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 ```
 
+Pour tester, vous pouvez faire cette commande sur les 3 hôtes :
 ```bash
-```
-
-
-```bash
+docker run hello-world
 ```
