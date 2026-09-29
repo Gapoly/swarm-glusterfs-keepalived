@@ -400,7 +400,7 @@ docker node promote swarm02 swarm03
 
 On a maintenant finis la partie Docker Swarm. On va basculer sur la dernière partie qui est `keepalived`
 
-## Keepalived
+## 🌐3. Keepalived
 
 Keepalived est installé par défaut sur Debian 13, mais si vous ếtes pas sûr vous pouvez quand mếme tenter une installation :
 
