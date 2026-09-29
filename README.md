@@ -355,7 +355,7 @@ docker run hello-world
 
 Si sa marche, on va passez à la configuration du dossier `volumes` de Docker Swarm.
 
-Hélas, on ne pourra pas répliquer directement le dossier `/var/lib/docker/volumes/` car chaque Docker à ses propres fichiers dedans qui ne peuvent pas être partagés (`backingFsBlockDev` & `metadata.db`)
+Hélas, on ne pourra pas répliquer directement le dossier `/var/lib/docker/volumes/` car chaque Docker à ses propres fichiers dedans qui ne peuvent pas être partagés (`backingFsBlockDev` & `metadata.db`).
 
 
 On va juste créer un dossier volumes dans `/mnt/docker/` et pointer manuellement dedans avec chaque déploiement Swarm.
@@ -391,8 +391,19 @@ On peut vérifier les noeuds du cluster swarm avec cette commande
 docker node ls
 ```
 
+Dans un cluster Docker Swarm, il est recommandé d'avoir minumum 3 managers pour le quorum :
+
+(*Dans Docker Swarm un manager est aussi un worker par défaut*)
 ```bash
+docker node promote swarm02 swarm03
 ```
 
+On a maintenant finis la partie Docker Swarm. On va basculer sur la dernière partie qui est `keepalived`
+
+## Keepalived
+
+Keepalived est installé par défaut sur Debian 13, mais si vous ếtes pas sûr vous pouvez quand mếme tenter une installation :
+
 ```bash
+apt install keepalived
 ```
