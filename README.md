@@ -391,7 +391,13 @@ On peut vérifier les noeuds du cluster swarm avec cette commande
 docker node ls
 ```
 
+## 🌐3. Installation Keepalived
+
+On va maintenant finir avec l'installation & configuration de `keepalived`.
+
+Sur les 3 serveurs, installé `keepalived` :
 ```bash
+apt install keepalived -y
 ```
 
 ```bash
