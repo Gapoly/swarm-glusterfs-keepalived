@@ -402,8 +402,109 @@ On va maintenant finis la partie Docker Swarm. On va basculer sur la dernière p
 
 ## 🌐3. Keepalived
 
-Keepalived est installé par défaut sur Debian 13, mais si vous ếtes pas sûr vous pouvez quand mếme tenter une installation :
-
+Keepalived est installé par défaut sur Debian 13, mais si vous ne l'avez pas alors faites :
 ```bash
 apt install keepalived -y
 ```
+
+---
+
+On va maintenant passé à la configuration de keepalived. Keepalived propose un fichier sample si vous voulez le lire mais dans mon cas, il nous faut juste le VRRP.
+
+Dans le fichier conf il faudra changer le mot de passe sur la ligne `auth_pass` et mettre votre IP virtuel qui sera partagé entre les hôtes en dessous de `virtual_ipaddress`. Le mot de passe doit être identique partout.
+
+Pour l'interface récupérer la bonne avec la commande `ip a` *(commence probablement par `eth` ou `ens`)*.
+
+---
+
+`swarm01`:
+```bash
+touch /etc/keepalived/keepalived.conf
+cat > /etc/keepalived/keepalived.conf << 'EOF'
+vrrp_instance VI_1 {
+  state MASTER
+  interface ens18
+  virtual_router_id 12
+  priority 100
+  advert_int 1
+  authentification {
+    auth_type PASS
+    auth_pass CHANGEME
+  }
+  unicast_peer {
+  192.168.1.2
+  192.168.1.3
+  }
+  virtual_ipaddress {
+    192.168.1.10
+  }
+}
+EOF
+systemctl enable --now keepalived
+```
+
+---
+
+`swarm02`:
+```bash
+touch /etc/keepalived/keepalived.conf
+cat > /etc/keepalived/keepalived.conf << 'EOF'
+vrrp_instance VI_1 {
+  state BACKUP
+  interface ens18
+  virtual_router_id 12
+  priority 90
+  advert_int 1
+  authentification {
+    auth_type PASS
+    auth_pass CHANGEME
+  }
+  unicast_peer {
+  192.168.1.1
+  192.168.1.3
+  }
+  virtual_ipaddress {
+    192.168.1.10
+  }
+}
+EOF
+systemctl enable --now keepalived
+```
+
+---
+
+`swarm03`:
+```bash
+touch /etc/keepalived/keepalived.conf
+cat > /etc/keepalived/keepalived.conf << 'EOF'
+vrrp_instance VI_1 {
+  state BACKUP
+  interface ens18
+  virtual_router_id 12
+  priority 80
+  advert_int 1
+  authentification {
+    auth_type PASS
+    auth_pass CHANGEME
+  }
+  unicast_peer {
+  192.168.1.1
+  192.168.1.2
+  }
+  virtual_ipaddress {
+    192.168.1.10
+  }
+}
+EOF
+systemctl enable --now keepalived
+```
+
+Pour etre sur que sa marche, faites un `systemctl status keepalived` et vérifiez qu'il n'y a pas d'erreur.
+
+Sur le noeud 01 faites `ip a` et vérifiez que vous voyez bien l'IP virtuel. Pour vérifier le basculement, éteignez le noeud 01 et ainsi de suite pour vérifier le bascule IP.
+
+Si tout est, la configuration `keepalived` est maintenant terminée.
+
+## Conclusion
+
+On a maintenant un cluster Docker Swarm qui marche avec réplication de données GlusterFS et haute disponibilité réseau avec Keepalived.
